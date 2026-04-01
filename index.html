@@ -81,7 +81,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // ===== エリアポリゴン =====
 
-// エリア1: ワイキキ中心部（追加料金なし）- 緑
+// エリア1: ワイキキ中心部（基本料金）- 緑
 const area1 = L.polygon([
   [21.2840, -157.8335],
   [21.2820, -157.8260],
@@ -99,7 +99,7 @@ const area1 = L.polygon([
   fillColor: '#22c55e',
   fillOpacity: 0.2,
   weight: 2
-}).addTo(map).bindPopup('<b>エリア1: ワイキキ中心部</b><br>追加料金なし');
+}).addTo(map).bindPopup('<b>エリア1: ワイキキ中心部</b><br>基本料金');
 
 // エリア2: カハラ・カイマナ・ダイヤモンドヘッド方面（+$40）- オレンジ
 const area2 = L.polygon([
@@ -171,10 +171,9 @@ function createMarker(lat, lng, name, area, price, color) {
   });
 
   let priceClass = 'free';
-  let priceText = '追加料金なし';
+  let priceText = '基本料金';
   if (price === 40) { priceClass = 'mid'; priceText = '+$40'; }
   else if (price === 50) { priceClass = 'high'; priceText = '+$50'; }
-  else if (price === -1) { priceClass = 'unknown'; priceText = '要確認'; }
 
   icon.bindPopup(`
     <div class="hotel-popup">
@@ -187,13 +186,13 @@ function createMarker(lat, lng, name, area, price, color) {
   return icon.addTo(map);
 }
 
-// エリア1（緑）- 追加料金なし
+// エリア1（緑）- 基本料金
 createMarker(21.2769, -157.8292, 'シェラトン・ワイキキ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2770, -157.8285, 'ロイヤル・ハワイアン', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2778, -157.8305, 'ハレクラニ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2757, -157.8250, 'ハイアット・リージェンシー', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2764, -157.8268, 'モアナ・サーフライダー', 'エリア1: ワイキキ中心部', 0, '#16a34a');
-createMarker(21.2790, -157.8320, 'トランプ・インターナショナル', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2790, -157.8320, 'カライ・ワイキキ・ビーチ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2810, -157.8290, 'リッツ・カールトン', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2763, -157.8273, 'アウトリガー・ワイキキ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
 createMarker(21.2785, -157.8315, 'アウトリガー・リーフ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
@@ -206,6 +205,7 @@ createMarker(21.2580, -157.8120, 'ダイヤモンドヘッド・ビーチ・ホ�
 
 // エリア3（オレンジ）- +$40
 createMarker(21.2895, -157.8440, 'アラモアナ・ホテル', 'エリア3: アラモアナ', 40, '#d97706');
+createMarker(21.2820, -157.8355, 'ルアナ・ワイキキ', 'エリア3: アラモアナ', 40, '#d97706');
 
 // エリア4（赤）- +$50
 createMarker(21.2830, -157.8370, 'ヒルトン・ハワイアン・ビレッジ', 'エリア4: ワイキキ西', 50, '#dc2626');
@@ -213,12 +213,14 @@ createMarker(21.2870, -157.8400, 'モダン・ホノルル', 'エリア4: ワイ
 createMarker(21.2880, -157.8410, 'プリンス・ワイキキ', 'エリア4: ワイキキ西', 50, '#dc2626');
 createMarker(21.2848, -157.8388, 'イリカイ・ホテル', 'エリア4: ワイキキ西', 50, '#dc2626');
 
-// 境界付近（黄色）- 要確認
-createMarker(21.2710, -157.8230, 'パーク・ショア・ワイキキ', '境界付近（要確認）', -1, '#eab308');
-createMarker(21.2720, -157.8215, 'クイーン・カピオラニ', '境界付近（要確認）', -1, '#eab308');
-createMarker(21.2740, -157.8235, 'ワイキキ・ビーチ・マリオット', '境界付近（要確認）', -1, '#eab308');
-createMarker(21.2738, -157.8238, 'アロヒラニ・リゾート', '境界付近（要確認）', -1, '#eab308');
-createMarker(21.2830, -157.8340, 'ダブルツリー・アラナ', '境界付近（要確認）', -1, '#eab308');
+// エリア2 追加（旧・境界付近）- +$40
+createMarker(21.2710, -157.8230, 'パーク・ショア・ワイキキ', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2720, -157.8215, 'クイーン・カピオラニ', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2740, -157.8235, 'ワイキキ・ビーチ・マリオット', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2738, -157.8238, 'アロヒラニ・リゾート', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+
+// エリア4 追加（旧・境界付近）- +$50
+createMarker(21.2830, -157.8340, 'ダブルツリー・アラナ', 'エリア4: ワイキキ西', 50, '#dc2626');
 
 // ===== 凡例 =====
 const legend = L.control({ position: 'topright' });
@@ -228,7 +230,7 @@ legend.onAdd = function () {
     <h4>配送エリア凡例</h4>
     <div class="legend-item">
       <div class="legend-color" style="background:#22c55e;"></div>
-      <span class="legend-label">エリア1: ワイキキ中心部（追加料金なし）</span>
+      <span class="legend-label">エリア1: ワイキキ中心部（基本料金）</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background:#f59e0b;"></div>
@@ -237,10 +239,6 @@ legend.onAdd = function () {
     <div class="legend-item">
       <div class="legend-color" style="background:#ef4444;"></div>
       <span class="legend-label">エリア4: ワイキキ西（+$50）</span>
-    </div>
-    <div class="legend-item">
-      <div class="legend-color" style="background:#eab308;"></div>
-      <span class="legend-label">境界付近（要確認）</span>
     </div>
   `;
   return div;
