@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ムームーレインボー ホテル配送エリアマップ</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; }
+#map { width: 100%; height: 100%; }
+
+.legend {
+  background: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 260px;
+}
+.legend h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 6px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.legend-color {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+.legend-label { font-size: 12px; }
+
+.title-bar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: rgba(255,255,255,0.95);
+  padding: 8px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  font-size: 16px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* ポップアップ */
+.hotel-popup h3 { font-size: 14px; margin-bottom: 4px; }
+.hotel-popup .area { font-size: 12px; color: #666; }
+.hotel-popup .price { font-size: 14px; font-weight: bold; margin-top: 4px; }
+.hotel-popup .price.free { color: #2d8a4e; }
+.hotel-popup .price.mid { color: #d97706; }
+.hotel-popup .price.high { color: #dc2626; }
+.hotel-popup .price.unknown { color: #a08000; }
+</style>
+</head>
+<body>
+
+<div class="title-bar">Mumu Rainbow ホテル配送エリアマップ</div>
+<div id="map"></div>
+
+<script>
+// マップ初期化（ワイキキ中心）
+const map = L.map('map').setView([21.2760, -157.8250], 14);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19
+}).addTo(map);
+
+// ===== エリアポリゴン =====
+
+// エリア1: ワイキキ中心部（追加料金なし）- 緑
+const area1 = L.polygon([
+  [21.2840, -157.8335],
+  [21.2820, -157.8260],
+  [21.2790, -157.8220],
+  [21.2745, -157.8215],
+  [21.2720, -157.8230],
+  [21.2740, -157.8240],
+  [21.2750, -157.8260],
+  [21.2755, -157.8290],
+  [21.2760, -157.8310],
+  [21.2770, -157.8340],
+  [21.2800, -157.8350]
+], {
+  color: '#16a34a',
+  fillColor: '#22c55e',
+  fillOpacity: 0.2,
+  weight: 2
+}).addTo(map).bindPopup('<b>エリア1: ワイキキ中心部</b><br>追加料金なし');
+
+// エリア2: カハラ・カイマナ・ダイヤモンドヘッド方面（+$40）- オレンジ
+const area2 = L.polygon([
+  [21.2745, -157.8215],
+  [21.2720, -157.8230],
+  [21.2700, -157.8220],
+  [21.2680, -157.8210],
+  [21.2640, -157.8200],
+  [21.2580, -157.8120],
+  [21.2560, -157.8050],
+  [21.2600, -157.7900],
+  [21.2650, -157.7700],
+  [21.2710, -157.7700],
+  [21.2730, -157.7750],
+  [21.2730, -157.7900],
+  [21.2710, -157.8050],
+  [21.2720, -157.8140],
+  [21.2740, -157.8180],
+  [21.2770, -157.8210],
+  [21.2790, -157.8220]
+], {
+  color: '#d97706',
+  fillColor: '#f59e0b',
+  fillOpacity: 0.2,
+  weight: 2
+}).addTo(map).bindPopup('<b>エリア2: カハラ・ダイヤモンドヘッド方面</b><br>+$40');
+
+// エリア3: アラモアナ方面（+$40）- オレンジ
+const area3 = L.polygon([
+  [21.2940, -157.8500],
+  [21.2940, -157.8380],
+  [21.2870, -157.8380],
+  [21.2860, -157.8420],
+  [21.2860, -157.8500]
+], {
+  color: '#d97706',
+  fillColor: '#f59e0b',
+  fillOpacity: 0.2,
+  weight: 2
+}).addTo(map).bindPopup('<b>エリア3: アラモアナ方面</b><br>+$40');
+
+// エリア4: ワイキキ西（+$50）- 赤
+const area4 = L.polygon([
+  [21.2800, -157.8350],
+  [21.2840, -157.8335],
+  [21.2860, -157.8345],
+  [21.2870, -157.8380],
+  [21.2880, -157.8420],
+  [21.2870, -157.8430],
+  [21.2840, -157.8410],
+  [21.2820, -157.8380],
+  [21.2800, -157.8360]
+], {
+  color: '#dc2626',
+  fillColor: '#ef4444',
+  fillOpacity: 0.2,
+  weight: 2
+}).addTo(map).bindPopup('<b>エリア4: ワイキキ西</b><br>+$50');
+
+// ===== ホテルマーカー =====
+function createMarker(lat, lng, name, area, price, color) {
+  const icon = L.circleMarker([lat, lng], {
+    radius: 7,
+    fillColor: color,
+    color: '#fff',
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.9
+  });
+
+  let priceClass = 'free';
+  let priceText = '追加料金なし';
+  if (price === 40) { priceClass = 'mid'; priceText = '+$40'; }
+  else if (price === 50) { priceClass = 'high'; priceText = '+$50'; }
+  else if (price === -1) { priceClass = 'unknown'; priceText = '要確認'; }
+
+  icon.bindPopup(`
+    <div class="hotel-popup">
+      <h3>${name}</h3>
+      <div class="area">${area}</div>
+      <div class="price ${priceClass}">${priceText}</div>
+    </div>
+  `);
+
+  return icon.addTo(map);
+}
+
+// エリア1（緑）- 追加料金なし
+createMarker(21.2769, -157.8292, 'シェラトン・ワイキキ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2770, -157.8285, 'ロイヤル・ハワイアン', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2778, -157.8305, 'ハレクラニ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2757, -157.8250, 'ハイアット・リージェンシー', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2764, -157.8268, 'モアナ・サーフライダー', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2790, -157.8320, 'トランプ・インターナショナル', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2810, -157.8290, 'リッツ・カールトン', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2763, -157.8273, 'アウトリガー・ワイキキ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+createMarker(21.2785, -157.8315, 'アウトリガー・リーフ', 'エリア1: ワイキキ中心部', 0, '#16a34a');
+
+// エリア2（オレンジ）- +$40
+createMarker(21.2695, -157.7735, 'カハラ・ホテル＆リゾート', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2652, -157.8215, 'カイマナ・ビーチ・ホテル', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2638, -157.8198, 'ロータス・ホノルル', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+createMarker(21.2580, -157.8120, 'ダイヤモンドヘッド・ビーチ・ホテル', 'エリア2: カハラ・ダイヤモンドヘッド', 40, '#d97706');
+
+// エリア3（オレンジ）- +$40
+createMarker(21.2895, -157.8440, 'アラモアナ・ホテル', 'エリア3: アラモアナ', 40, '#d97706');
+
+// エリア4（赤）- +$50
+createMarker(21.2830, -157.8370, 'ヒルトン・ハワイアン・ビレッジ', 'エリア4: ワイキキ西', 50, '#dc2626');
+createMarker(21.2870, -157.8400, 'モダン・ホノルル', 'エリア4: ワイキキ西', 50, '#dc2626');
+createMarker(21.2880, -157.8410, 'プリンス・ワイキキ', 'エリア4: ワイキキ西', 50, '#dc2626');
+createMarker(21.2848, -157.8388, 'イリカイ・ホテル', 'エリア4: ワイキキ西', 50, '#dc2626');
+
+// 境界付近（黄色）- 要確認
+createMarker(21.2710, -157.8230, 'パーク・ショア・ワイキキ', '境界付近（要確認）', -1, '#eab308');
+createMarker(21.2720, -157.8215, 'クイーン・カピオラニ', '境界付近（要確認）', -1, '#eab308');
+createMarker(21.2740, -157.8235, 'ワイキキ・ビーチ・マリオット', '境界付近（要確認）', -1, '#eab308');
+createMarker(21.2738, -157.8238, 'アロヒラニ・リゾート', '境界付近（要確認）', -1, '#eab308');
+createMarker(21.2830, -157.8340, 'ダブルツリー・アラナ', '境界付近（要確認）', -1, '#eab308');
+
+// ===== 凡例 =====
+const legend = L.control({ position: 'topright' });
+legend.onAdd = function () {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <h4>配送エリア凡例</h4>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#22c55e;"></div>
+      <span class="legend-label">エリア1: ワイキキ中心部（追加料金なし）</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#f59e0b;"></div>
+      <span class="legend-label">エリア2/3: カハラ・アラモアナ（+$40）</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#ef4444;"></div>
+      <span class="legend-label">エリア4: ワイキキ西（+$50）</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background:#eab308;"></div>
+      <span class="legend-label">境界付近（要確認）</span>
+    </div>
+  `;
+  return div;
+};
+legend.addTo(map);
+</script>
+
+</body>
+</html>
