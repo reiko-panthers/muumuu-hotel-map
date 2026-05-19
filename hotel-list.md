@@ -31,7 +31,7 @@
 | 18 | ココナッツ・ワイキキ・ホテル | Coconut Waikiki Hotel, a Joie de Vivre Hotel | レワーズ通り近く |
 | 19 | コートヤード・バイ・マリオット・ワイキキ・ビーチ | Courtyard by Marriott Waikiki Beach | クヒオ通り沿い |
 | 20 | オハナ・ワイキキ・マリア by アウトリガー | Ohana Waikiki Malia by Outrigger | クヒオ通り沿い |
-| 21 | オハナ・ワイキキ・イースト by アウトリガー | Ohana Waikiki East by Outrigger | クヒオ通り沿い |
+| 21 | アウトリガー・ワイキキ・パラダイス | Outrigger Waikiki Paradise | クヒオ通り沿い |
 | 22 | ブレイカーズ・ホテル | Breakers Hotel | ビーチウォーク近く |
 | 23 | ハワイアナ・ホテル | Hawaiiana Hotel | ビーチウォーク近く |
 | 24 | ポリネシアン・レジデンス | The Polynesian Residences | クヒオ通り近く |
