@@ -1,0 +1,123 @@
+<!-- ========================================================
+     ムームーレインボー ホテル配送エリアマップ（WP固定ページ埋め込み用）
+     貼り付け方法: 投稿/固定ページの「カスタムHTML」ブロックに、
+     このファイルの中身を丸ごとコピペすること。
+     「段落」「クラシック」ブロックに貼るとwpautopでJSが壊れる。
+======================================================== -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+/* このマップだけにスコープを限定（WPテンプレに副作用を出さない） */
+#muumuu-hotel-map-wrapper { position: relative; width: 100%; height: 600px; max-width: 100%; margin: 16px 0; font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', sans-serif; }
+@media (max-width: 768px) { #muumuu-hotel-map-wrapper { height: 480px; } }
+
+#muumuu-hotel-map-wrapper #map { width: 100%; height: 100%; border-radius: 8px; overflow: hidden; }
+
+#muumuu-hotel-map-wrapper .map-title-bar { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.95); padding: 8px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); font-size: 16px; font-weight: bold; white-space: nowrap; }
+@media (max-width: 480px) { #muumuu-hotel-map-wrapper .map-title-bar { font-size: 13px; padding: 6px 12px; } }
+
+#muumuu-hotel-map-wrapper .legend { background: white; padding: 12px 16px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.25); font-size: 13px; line-height: 1.8; max-width: 280px; }
+#muumuu-hotel-map-wrapper .legend h4 { margin: 0 0 8px 0; font-size: 14px; border-bottom: 1px solid #ddd; padding-bottom: 6px; }
+#muumuu-hotel-map-wrapper .legend-item { display: flex; align-items: center; gap: 8px; }
+#muumuu-hotel-map-wrapper .legend-color { width: 18px; height: 18px; border-radius: 3px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.2); }
+#muumuu-hotel-map-wrapper .legend-label { font-size: 12px; }
+#muumuu-hotel-map-wrapper .legend small { display:block; margin-top:8px; color:#555; font-size:11px; line-height:1.5; }
+
+#muumuu-hotel-map-wrapper .hotel-popup h3 { font-size: 14px; margin-bottom: 4px; }
+#muumuu-hotel-map-wrapper .hotel-popup .area { font-size: 12px; color: #666; }
+#muumuu-hotel-map-wrapper .hotel-popup .price { font-size: 14px; font-weight: bold; margin-top: 4px; }
+#muumuu-hotel-map-wrapper .hotel-popup .price.free { color: #2d8a4e; }
+#muumuu-hotel-map-wrapper .hotel-popup .price.mid { color: #d97706; }
+#muumuu-hotel-map-wrapper .hotel-popup .price.high { color: #dc2626; }
+
+#muumuu-hotel-map-wrapper .store-marker { background: #e03384; color: white; border: 3px solid white; border-radius: 50%; width: 28px; height: 28px; text-align: center; line-height: 22px; font-weight: bold; font-size: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
+</style>
+
+<div id="muumuu-hotel-map-wrapper">
+  <div class="map-title-bar">ムームーレインボー ホテル配送エリアマップ</div>
+  <div id="map"></div>
+</div>
+
+<script>
+(function(){
+  // Leaflet読み込み完了を待つ（WPの読み込み順で先にこのスクリプトが走るケースに対応）
+  function init(){
+    if (typeof L === 'undefined') { setTimeout(init, 50); return; }
+    if (document.getElementById('map')._leaflet_id) return; // 二重初期化ガード
+
+    var STORE_LAT = 21.2785, STORE_LNG = -157.8276;
+    var map = L.map('map').setView([STORE_LAT, STORE_LNG], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(map);
+
+    L.circle([STORE_LAT, STORE_LNG], { radius: 2000, color: '#d97706', fillColor: '#f59e0b', fillOpacity: 0.12, weight: 2, dashArray: '6,6' }).addTo(map).bindPopup('<b>B エリア境界</b><br>店舗から約2km<br>+$40');
+    L.circle([STORE_LAT, STORE_LNG], { radius: 800, color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.2, weight: 2 }).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約800m（徒歩10分）<br>基本料金');
+
+    var storeIcon = L.divIcon({ className: 'store-marker', html: '★', iconSize: [28, 28], iconAnchor: [14, 14] });
+    L.marker([STORE_LAT, STORE_LNG], { icon: storeIcon }).addTo(map).bindPopup('<b>ムームーレインボー</b><br>2270 Kalakaua Ave #1105<br>Waikiki Business Plaza');
+
+    function createMarker(lat, lng, name, areaLabel, price, color) {
+      var icon = L.circleMarker([lat, lng], { radius: 7, fillColor: color, color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9 });
+      var priceClass = 'free', priceText = '基本料金';
+      if (price === 40) { priceClass = 'mid'; priceText = '+$40'; }
+      else if (price === 50) { priceClass = 'high'; priceText = '+$50'; }
+      icon.bindPopup('<div class="hotel-popup"><h3>' + name + '</h3><div class="area">' + areaLabel + '</div><div class="price ' + priceClass + '">' + priceText + '</div></div>');
+      return icon.addTo(map);
+    }
+
+    // ===== A エリア（緑・基本料金） =====
+    createMarker(21.2763, -157.8273, 'アウトリガー・ワイキキ・ビーチ・リゾート', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2785, -157.8315, 'アウトリガー・リーフ', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2769, -157.8292, 'シェラトン・ワイキキ', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2770, -157.8285, 'ロイヤル・ハワイアン', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2764, -157.8268, 'モアナ・サーフライダー', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2778, -157.8305, 'ハレクラニ', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2757, -157.8250, 'ハイアット・リージェンシー', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2790, -157.8320, 'カライ・ワイキキ・ビーチ', 'A: 徒歩10分圏内', 0, '#16a34a');
+    createMarker(21.2810, -157.8290, 'リッツ・カールトン', 'A: 徒歩10分圏内', 0, '#16a34a');
+
+    // ===== B エリア（オレンジ・+$40） =====
+    createMarker(21.2738, -157.8238, 'アロヒラニ・リゾート', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2740, -157.8235, 'ワイキキ・ビーチ・マリオット', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2735, -157.8245, 'ヒルトン・ワイキキ・ビーチ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2733, -157.8240, 'ハイアット・プレイス・ワイキキ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2742, -157.8232, 'アストン・ワイキキ・ビーチ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2830, -157.8370, 'ヒルトン・ハワイアン・ビレッジ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2870, -157.8400, 'モダン・ホノルル', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2880, -157.8410, 'プリンス・ワイキキ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2848, -157.8388, 'イリカイ・ホテル', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2830, -157.8340, 'ダブルツリー・アラナ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2895, -157.8440, 'アラモアナ・ホテル', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2820, -157.8355, 'ルアナ・ワイキキ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2710, -157.8230, 'パーク・ショア・ワイキキ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2720, -157.8215, 'クイーン・カピオラニ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+    createMarker(21.2652, -157.8215, 'カイマナ・ビーチ・ホテル', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
+
+    // ===== C エリア（赤・+$50） =====
+    createMarker(21.2695, -157.7735, 'カハラ・ホテル＆リゾート', 'C: 遠方', 50, '#dc2626');
+    createMarker(21.2638, -157.8198, 'ロータス・ホノルル', 'C: 遠方', 50, '#dc2626');
+    createMarker(21.2580, -157.8120, 'ダイヤモンドヘッド・ビーチ・ホテル', 'C: 遠方', 50, '#dc2626');
+
+    var legend = L.control({ position: 'topright' });
+    legend.onAdd = function () {
+      var div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = '<h4>配送料金エリア</h4>' +
+        '<div class="legend-item"><div class="legend-color" style="background:#22c55e;"></div><span class="legend-label"><b>A</b>: 徒歩10分圏内（基本料金）</span></div>' +
+        '<div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div><span class="legend-label"><b>B</b>: 徒歩圏外〜車で近距離（+$40）</span></div>' +
+        '<div class="legend-item"><div class="legend-color" style="background:#ef4444;"></div><span class="legend-label"><b>C</b>: 遠方（+$50）</span></div>' +
+        '<small>★ = ムームーレインボー店舗<br>同心円は店舗から800m・2kmの目安</small>';
+      return div;
+    };
+    legend.addTo(map);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
