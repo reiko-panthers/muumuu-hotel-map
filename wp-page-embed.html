@@ -55,7 +55,7 @@
     }).addTo(map);
 
     L.circle([STORE_LAT, STORE_LNG], { radius: 2000, color: '#d97706', fillColor: '#f59e0b', fillOpacity: 0.12, weight: 2, dashArray: '6,6' }).addTo(map).bindPopup('<b>B エリア境界</b><br>店舗から約2km<br>+$40');
-    L.circle([STORE_LAT, STORE_LNG], { radius: 800, color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.2, weight: 2 }).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約800m（徒歩10分）<br>基本料金');
+    L.circle([STORE_LAT, STORE_LNG], { radius: 500, color: '#16a34a', fillColor: '#22c55e', fillOpacity: 0.2, weight: 2 }).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約500m<br>基本料金');
 
     var storeIcon = L.divIcon({ className: 'store-marker', html: '★', iconSize: [28, 28], iconAnchor: [14, 14] });
     L.marker([STORE_LAT, STORE_LNG], { icon: storeIcon }).addTo(map).bindPopup('<b>ムームーレインボー</b><br>2270 Kalakaua Ave #1105<br>Waikiki Business Plaza');
@@ -109,7 +109,7 @@
         '<div class="legend-item"><div class="legend-color" style="background:#22c55e;"></div><span class="legend-label"><b>A</b>: 徒歩10分圏内（基本料金）</span></div>' +
         '<div class="legend-item"><div class="legend-color" style="background:#f59e0b;"></div><span class="legend-label"><b>B</b>: 徒歩圏外〜車で近距離（+$40）</span></div>' +
         '<div class="legend-item"><div class="legend-color" style="background:#ef4444;"></div><span class="legend-label"><b>C</b>: 遠方（+$50）</span></div>' +
-        '<small>★ = ムームーレインボー店舗<br>同心円は店舗から800m・2kmの目安</small>';
+        '<small>★ = ムームーレインボー店舗<br>同心円は店舗から500m・2kmの目安</small>';
       return div;
     };
     legend.addTo(map);

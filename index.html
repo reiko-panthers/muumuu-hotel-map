@@ -110,14 +110,14 @@ L.circle([STORE_LAT, STORE_LNG], {
   dashArray: '6,6'
 }).addTo(map).bindPopup('<b>B エリア境界</b><br>店舗から約2km<br>+$40');
 
-// A境界: 半径800m（緑 - 上層）
+// A境界: 半径500m（緑 - 上層）
 L.circle([STORE_LAT, STORE_LNG], {
-  radius: 800,
+  radius: 500,
   color: '#16a34a',
   fillColor: '#22c55e',
   fillOpacity: 0.2,
   weight: 2
-}).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約800m（徒歩10分）<br>基本料金');
+}).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約500m<br>基本料金');
 
 // ===== 店舗マーカー =====
 const storeIcon = L.divIcon({
@@ -206,7 +206,7 @@ legend.onAdd = function () {
       <div class="legend-color" style="background:#ef4444;"></div>
       <span class="legend-label"><b>C</b>: 遠方（+$50）</span>
     </div>
-    <small>★ = ムームーレインボー店舗<br>同心円は店舗から800m・2kmの目安</small>
+    <small>★ = ムームーレインボー店舗<br>同心円は店舗から500m・2kmの目安</small>
   `;
   return div;
 };
