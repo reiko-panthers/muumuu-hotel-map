@@ -108,7 +108,7 @@ L.circle([STORE_LAT, STORE_LNG], {
   fillOpacity: 0.12,
   weight: 2,
   dashArray: '6,6'
-}).addTo(map).bindPopup('<b>B エリア境界</b><br>店舗から約2km<br>+$40');
+}).addTo(map).bindPopup('<b>B エリア境界</b><br>店舗から約2km');
 
 // A境界: 半径500m（緑 - 上層）
 L.circle([STORE_LAT, STORE_LNG], {
@@ -117,7 +117,7 @@ L.circle([STORE_LAT, STORE_LNG], {
   fillColor: '#22c55e',
   fillOpacity: 0.2,
   weight: 2
-}).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約500m<br>基本料金');
+}).addTo(map).bindPopup('<b>A エリア境界</b><br>店舗から約500m');
 
 // ===== 店舗マーカー =====
 const storeIcon = L.divIcon({
@@ -141,9 +141,10 @@ function createMarker(lat, lng, name, areaLabel, price, color) {
     fillOpacity: 0.9
   });
 
-  let priceClass = 'free', priceText = '基本料金';
-  if (price === 40) { priceClass = 'mid'; priceText = '+$40'; }
-  else if (price === 50) { priceClass = 'high'; priceText = '+$50'; }
+  // price は 0=A / 40=B / 50=C のエリア識別子。表示は配送タイプ別の料金。
+  let priceClass = 'free', priceText = '返却のみ $20 / 受取＋返却 $45';
+  if (price === 40) { priceClass = 'mid'; priceText = '返却のみ $40 / 受取＋返却 $85'; }
+  else if (price === 50) { priceClass = 'high'; priceText = '返却のみ $50 / 受取＋返却 $105'; }
 
   icon.bindPopup(`
     <div class="hotel-popup">
@@ -155,7 +156,7 @@ function createMarker(lat, lng, name, areaLabel, price, color) {
   return icon.addTo(map);
 }
 
-// ===== A エリア（緑・基本料金） =====
+// ===== A エリア（緑・返却のみ$20/往復$45） =====
 createMarker(21.2763, -157.8273, 'アウトリガー・ワイキキ・ビーチ・リゾート', 'A: 徒歩10分圏内', 0, '#16a34a');
 createMarker(21.2785, -157.8315, 'アウトリガー・リーフ', 'A: 徒歩10分圏内', 0, '#16a34a');
 createMarker(21.2769, -157.8292, 'シェラトン・ワイキキ', 'A: 徒歩10分圏内', 0, '#16a34a');
@@ -166,7 +167,7 @@ createMarker(21.2757, -157.8250, 'ハイアット・リージェンシー', 'A: 
 createMarker(21.2790, -157.8320, 'カライ・ワイキキ・ビーチ', 'A: 徒歩10分圏内', 0, '#16a34a');
 createMarker(21.2810, -157.8290, 'リッツ・カールトン', 'A: 徒歩10分圏内', 0, '#16a34a');
 
-// ===== B エリア（オレンジ・+$40） =====
+// ===== B エリア（オレンジ・返却のみ$40/往復$85） =====
 createMarker(21.2738, -157.8238, 'アロヒラニ・リゾート', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
 createMarker(21.2740, -157.8235, 'ワイキキ・ビーチ・マリオット', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
 createMarker(21.2735, -157.8245, 'ヒルトン・ワイキキ・ビーチ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
@@ -183,7 +184,7 @@ createMarker(21.2710, -157.8230, 'パーク・ショア・ワイキキ', 'B: 徒
 createMarker(21.2720, -157.8215, 'クイーン・カピオラニ', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
 createMarker(21.2652, -157.8215, 'カイマナ・ビーチ・ホテル', 'B: 徒歩圏外〜車で近距離', 40, '#d97706');
 
-// ===== C エリア（赤・+$50） =====
+// ===== C エリア（赤・返却のみ$50/往復$105） =====
 createMarker(21.2695, -157.7735, 'カハラ・ホテル＆リゾート', 'C: 遠方', 50, '#dc2626');
 createMarker(21.2638, -157.8198, 'ロータス・ホノルル', 'C: 遠方', 50, '#dc2626');
 createMarker(21.2580, -157.8120, 'ダイヤモンドヘッド・ビーチ・ホテル', 'C: 遠方', 50, '#dc2626');
@@ -196,17 +197,17 @@ legend.onAdd = function () {
     <h4>配送料金エリア</h4>
     <div class="legend-item">
       <div class="legend-color" style="background:#22c55e;"></div>
-      <span class="legend-label"><b>A</b>: 徒歩10分圏内（基本料金）</span>
+      <span class="legend-label"><b>A</b>: ワイキキ中心部</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background:#f59e0b;"></div>
-      <span class="legend-label"><b>B</b>: 徒歩圏外〜車で近距離（+$40）</span>
+      <span class="legend-label"><b>B</b>: 徒歩圏外〜車で近距離</span>
     </div>
     <div class="legend-item">
       <div class="legend-color" style="background:#ef4444;"></div>
-      <span class="legend-label"><b>C</b>: 遠方（+$50）</span>
+      <span class="legend-label"><b>C</b>: 遠方</span>
     </div>
-    <small>★ = ムームーレインボー店舗<br>同心円は店舗から500m・2kmの目安</small>
+    <small>返却のみ A$20 / B$40 / C$50　受取＋返却 A$45 / B$85 / C$105<br>★ = ムームーレインボー店舗</small>
   `;
   return div;
 };
